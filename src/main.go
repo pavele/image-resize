@@ -86,8 +86,8 @@ func main() {
 		quit<-1
 	}(semaphore)
 	
-	<-semaphore*/
 	<-semaphore
+	<-semaphore*/
 	<-semaphore
 	<-semaphore
 	
