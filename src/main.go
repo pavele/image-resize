@@ -35,7 +35,7 @@ var resolutions = []resolution{
 
 func main() {
 	runtime.GOMAXPROCS(4)
-	//filepath.Walk(srcDir, resize)
+	
 	var files,_ = ioutil.ReadDir(srcDir)
 	var samples [numberOfSamples]os.FileInfo
 	for i:=0; i< numberOfSamples; i++ {
@@ -43,11 +43,6 @@ func main() {
 	}
 	
 	var stime = time.Now()
-	
-	//for i:=0; i< numberOfSamples; i++ {
-		//fmt.Printf("%s\n", samples[i].Name())
-		//resize(srcDir + "/" + samples[i].Name(), samples[i], nil)
-	//}
 	
 	semaphore := make(chan int,4)
 	go func(quit chan int) {
@@ -106,21 +101,17 @@ func resize(path string, fileInfo os.FileInfo, err error) error {
 		return errors.New("Error loading image: " + path)
 	}
 	defer srcImg.Release()
-	//srcW := float64(srcImg.Width())
-	//srcH := float64(srcImg.Height())
 	
 	var fileName = fileInfo.Name()	
 	var extension = filepath.Ext(fileName)
 	var nameNoExt = strings.TrimRight(fileName, extension)
 	
 	for _, res := range resolutions {
-		//thumbW := srcW * ratio
-		//thumbH := srcH * ratio
 		//fmt.Printf("Resolution %dx%d\n", res.width, res.height)
 		thumbW := res.width
 		thumbH := res.height
 		thumbnail := opencv.Resize(srcImg, int(thumbW), int(thumbH), 1)
-		name:= filepath.Join(destDir, fmt.Sprintf("%s__%dx%d_%s", nameNoExt, res.width, res.height, extension))		
+		name:= filepath.Join(destDir, fmt.Sprintf("%s__%dx%d_%d_%s", nameNoExt, res.width, res.height, time.Now().Unix(), extension))		
 		
 		opencv.SaveImage(name, thumbnail, 0)
 	}
